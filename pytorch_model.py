@@ -1,14 +1,11 @@
-from typing import Callable, List, Optional, Type, Union
+from collections.abc import Callable
+from typing import Optional, Union
 
 import torch
 import torch.nn as nn
-
-from torch import Tensor
-import numpy as np
-
-from torchvision import transforms
-
 from PIL import Image
+from torch import Tensor
+from torchvision import transforms
 
 
 def conv3x3(
@@ -63,7 +60,6 @@ class BasicBlock(nn.Module):
             raise NotImplementedError(
                 "Dilation > 1 not supported in BasicBlock"
             )
-        # Both self.conv1 and self.downsample layers downsample the input when stride != 1
         self.conv1 = conv3x3(inplanes, planes, stride)
         self.bn1 = norm_layer(planes)
         self.relu = nn.ReLU(inplace=True)
@@ -152,13 +148,13 @@ class Bottleneck(nn.Module):
 class Classifier(nn.Module):
     def __init__(
         self,
-        block: Type[Union[BasicBlock, Bottleneck]] = BasicBlock,
-        layers: List[int] = [2, 2, 2, 2],
+        block: type[Union[BasicBlock, Bottleneck]] = BasicBlock,
+        layers: list[int] = (2, 2, 2, 2),
         num_classes: int = 1000,
         zero_init_residual: bool = False,
         groups: int = 1,
         width_per_group: int = 64,
-        replace_stride_with_dilation: Optional[List[bool]] = None,
+        replace_stride_with_dilation: Optional[list[bool]] = None,
         norm_layer: Optional[Callable[..., nn.Module]] = None,
     ) -> None:
         super().__init__()
@@ -215,7 +211,7 @@ class Classifier(nn.Module):
                 nn.init.kaiming_normal_(
                     m.weight, mode="fan_out", nonlinearity="relu"
                 )
-            elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
+            elif isinstance(m, nn.BatchNorm2d | nn.GroupNorm):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
 
@@ -231,7 +227,7 @@ class Classifier(nn.Module):
 
     def _make_layer(
         self,
-        block: Type[Union[BasicBlock, Bottleneck]],
+        block: type[Union[BasicBlock, Bottleneck]],
         planes: int,
         blocks: int,
         stride: int = 1,
@@ -314,9 +310,9 @@ if __name__ == "__main__":
     mtailor = Classifier(BasicBlock, [2, 2, 2, 2])
     mtailor.load_state_dict(torch.load("./resnet18-f37072fd.pth"))
     mtailor.eval()
-    
+
     img = Image.open("./n01667114_mud_turtle.JPEG")
-    inp = mtailor.preprocess_numpy(img).unsqueeze(0) 
+    inp = mtailor.preprocess_numpy(img).unsqueeze(0)
     res = mtailor.forward(inp)
 
     print(torch.argmax(res))

@@ -1,5 +1,5 @@
 import os
-from typing import List, Optional, Tuple
+from typing import Optional
 
 import numpy as np
 import onnxruntime as ort
@@ -12,7 +12,7 @@ class Preprocessor:
     Implements the same preprocessing steps as the PyTorch model.
     """
 
-    def __init__(self, target_size: Tuple[int, int] = (224, 224)):
+    def __init__(self, target_size: tuple[int, int] = (224, 224)):
         """
         Initialize the preprocessor with target image size.
 
@@ -69,7 +69,7 @@ class Preprocessor:
         except Exception as e:
             raise ValueError(f"Error processing image: {str(e)}")
 
-    def preprocess_batch(self, image_paths: List[str]) -> np.ndarray:
+    def preprocess_batch(self, image_paths: list[str]) -> np.ndarray:
         """
         Preprocess multiple images from file paths.
 
@@ -147,7 +147,7 @@ class ONNXModel:
 
         return int(predicted_class)
 
-    def predict_batch(self, image_paths: List[str]) -> List[int]:
+    def predict_batch(self, image_paths: list[str]) -> list[int]:
         """
         Run inference on multiple images and return the predicted class IDs.
 
@@ -167,7 +167,7 @@ class ONNXModel:
 
     def predict_with_confidence(
         self, image_path: str, top_k: int = 5
-    ) -> List[Tuple[int, float]]:
+    ) -> list[tuple[int, float]]:
         """
         Run inference on a single image and return the top-k predictions with confidence scores.
 

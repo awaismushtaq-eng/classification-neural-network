@@ -1,7 +1,7 @@
 import argparse
 import os
 import sys
-from typing import Optional, Tuple
+from typing import Optional
 
 import numpy as np
 import onnxruntime as ort
@@ -50,7 +50,7 @@ def load_pytorch_model(weights_path: str) -> torch.nn.Module:
 def convert_to_onnx(
     model: torch.nn.Module,
     onnx_path: str,
-    input_shape: Tuple[int, int, int, int] = (1, 3, 224, 224),
+    input_shape: tuple[int, int, int, int] = (1, 3, 224, 224),
     dynamic_axes: bool = True,
 ) -> str:
     """
